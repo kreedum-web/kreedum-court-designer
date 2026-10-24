@@ -4,9 +4,11 @@ import '../config/app_config.dart';
 import '../config/theme.dart';
 import '../services/enquiry_service.dart';
 import '../services/export_service.dart';
+import 'brand.dart';
 
-/// Bottom sheet with WhatsApp / call / e-mail options.
-/// When [snapshot] is given, the design and its colours go with the enquiry.
+/// Contact / quote sheet opened from the top-right support icon.
+/// When [snapshot] is given (from the editor), the design and its colours
+/// go with the enquiry.
 Future<void> showEnquirySheet(BuildContext context, {Future<DesignSnapshot> Function()? snapshot}) {
   return showModalBottomSheet<void>(
     context: context,
@@ -26,6 +28,8 @@ class _EnquirySheet extends StatefulWidget {
 class _EnquirySheetState extends State<_EnquirySheet> {
   bool _busy = false;
 
+  bool get _hasDesign => widget.snapshot != null;
+
   Future<void> _run(Future<void> Function() action) async {
     if (_busy) return;
     setState(() => _busy = true);
@@ -40,8 +44,7 @@ class _EnquirySheetState extends State<_EnquirySheet> {
     }
   }
 
-  Future<String> _text() async =>
-      widget.snapshot == null ? AppConfig.genericEnquiry : (await widget.snapshot!()).enquiryText();
+  Future<String> _text() async => _hasDesign ? (await widget.snapshot!()).enquiryText() : AppConfig.genericEnquiry;
 
   Future<void> _check(Future<bool> launched) async {
     if (!await launched && mounted) {
@@ -51,41 +54,48 @@ class _EnquirySheetState extends State<_EnquirySheet> {
 
   @override
   Widget build(BuildContext context) {
-    final hasDesign = widget.snapshot != null;
+    final text = Theme.of(context).textTheme;
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('GET A QUOTE', style: KText.eyebrow()),
-            const SizedBox(height: 6),
-            Text(
-              hasDesign ? 'Send this design to our team' : 'Talk to our team',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              hasDesign
-                  ? 'We\'ll reply with pricing, samples and timelines. Your colour choices are included automatically.'
-                  : 'Tell us about your court or playground and we\'ll get back with pricing and options.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 18),
-            if (hasDesign) ...[
-              WhatsAppTile(
-                busy: _busy,
-                onTap: () => _run(() async => ExportService.shareImage(await widget.snapshot!())),
+            if (_hasDesign) ...[
+              Text('GET A QUOTE', style: KText.eyebrow()),
+              const SizedBox(height: 6),
+              Text('Send this design to our team', style: text.titleLarge),
+              const SizedBox(height: 6),
+              Text(
+                'We\'ll reply with pricing, samples and timelines. Your colour choices are included automatically.',
+                style: text.bodyMedium,
               ),
-              const SizedBox(height: 10),
+            ] else ...[
+              const BrandLockup(onDark: false, markSize: 30),
+              const SizedBox(height: 14),
+              Text('Talk to our team', style: text.titleLarge),
+              const SizedBox(height: 4),
+              Text('Pricing, samples and site visits for courts and playground floors.', style: text.bodyMedium),
             ],
+            const SizedBox(height: 12),
+            if (_hasDesign)
+              _Tile(
+                icon: Icons.send_rounded,
+                iconColor: KColors.whatsappText,
+                iconBg: KColors.whatsapp.withValues(alpha: 0.18),
+                title: 'Send design image',
+                subtitle: 'Pick WhatsApp (or any app) in the share menu',
+                onTap: _busy ? null : () => _run(() async => ExportService.shareImage(await widget.snapshot!())),
+              ),
             _Tile(
               icon: Icons.chat_outlined,
               iconColor: KColors.whatsappText,
               iconBg: KColors.whatsapp.withValues(alpha: 0.18),
               title: 'Chat on WhatsApp',
-              subtitle: hasDesign ? 'Opens a chat with your colour list filled in' : 'Opens a chat with us',
+              subtitle: _hasDesign
+                  ? 'Opens a chat with your colour list filled in'
+                  : 'Usually replies within a few hours',
               onTap: _busy ? null : () => _run(() async => _check(EnquiryService.whatsapp(await _text()))),
             ),
             _Tile(
@@ -103,61 +113,28 @@ class _EnquirySheetState extends State<_EnquirySheet> {
                   : () => _run(
                       () async => _check(
                         EnquiryService.email(
-                          subject: hasDesign ? 'Quote request – ${(await widget.snapshot!()).title}' : 'Quote request',
+                          subject: _hasDesign ? 'Quote request – ${(await widget.snapshot!()).title}' : 'Enquiry',
                           body: await _text(),
                         ),
                       ),
                     ),
             ),
-            if (_busy) const LinearProgressIndicator(minHeight: 2),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Primary "send the picture" action — uses the system share sheet so the user
-/// can pick WhatsApp (or WhatsApp Business) with the image attached.
-class WhatsAppTile extends StatelessWidget {
-  const WhatsAppTile({super.key, required this.onTap, this.busy = false});
-  final VoidCallback onTap;
-  final bool busy;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: KColors.whatsapp,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: busy ? null : onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            children: [
-              const Icon(Icons.send_rounded, color: KColors.whatsappText),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Send design image',
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(color: KColors.whatsappText),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Pick WhatsApp in the share menu',
-                      style: Theme.of(context).textTheme.bodySmall!
-                          .copyWith(color: KColors.whatsappText.withValues(alpha: 0.8)),
-                    ),
-                  ],
-                ),
+            if (!_hasDesign)
+              _Tile(
+                icon: Icons.language_rounded,
+                title: 'Website',
+                subtitle: AppConfig.website.replaceFirst(RegExp(r'^https?://'), ''),
+                onTap: _busy ? null : () => _run(() => _check(EnquiryService.website())),
               ),
-              const Icon(Icons.chevron_right_rounded, color: KColors.whatsappText),
-            ],
-          ),
+            if (!_hasDesign && AppConfig.address.isNotEmpty)
+              _Tile(icon: Icons.place_outlined, title: 'Address', subtitle: AppConfig.address, onTap: null),
+            if (_busy) const LinearProgressIndicator(minHeight: 2),
+            if (!_hasDesign)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text('This app works offline and does not collect any personal data.', style: text.bodySmall),
+              ),
+          ],
         ),
       ),
     );
@@ -191,7 +168,7 @@ class _Tile extends StatelessWidget {
       ),
       title: Text(title, style: Theme.of(context).textTheme.labelLarge),
       subtitle: Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
-      trailing: const Icon(Icons.chevron_right_rounded, color: KColors.slateLight),
+      trailing: onTap == null ? null : const Icon(Icons.chevron_right_rounded, color: KColors.slateLight),
       onTap: onTap,
     );
   }

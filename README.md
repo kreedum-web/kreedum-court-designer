@@ -114,7 +114,8 @@ lib/
   services/hit_map.dart       tap -> which area (hidden colour-coded render)
   services/export_service.dart  PNG / PDF / share / print
   services/enquiry_service.dart WhatsApp / call / e-mail
-  screens/                    home, category grid, editor, contact
+  screens/                    home (search + tabs) and the colour editor
+  widgets/                    floor card, logo lockup, contact/quote sheet
 assets/floors/                40 floor drawings + catalog.json
 assets/brand/                 Kreedum logo, icon & splash sources
 assets/fonts/                 Space Grotesk, Inter, IBM Plex Mono (OFL)

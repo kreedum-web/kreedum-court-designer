@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../config/app_config.dart';
 import '../config/theme.dart';
 import '../models/catalog.dart';
 import '../widgets/brand.dart';
 import '../widgets/enquiry_sheet.dart';
-import '../widgets/floor_thumbnail.dart';
-import 'category_screen.dart';
-import 'contact_screen.dart';
+import '../widgets/floor_card.dart';
 
+/// App home: logo bar, search, category tabs and a grid of designs.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -18,269 +16,236 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final Future<Catalog> _catalog = Catalog.load();
+  final _search = TextEditingController();
+
+  String _query = '';
+
+  /// Selected category id, or null for "All".
+  String? _filter;
+
+  /// How many designs each category previews on the "All" tab.
+  static const _previewCount = 4;
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  void _clearSearch() {
+    _search.clear();
+    setState(() => _query = '');
+  }
+
+  /// True when every word typed appears somewhere in the design's name/category.
+  bool _matches(FloorItem item) {
+    if (_query.isEmpty) return true;
+    final haystack = '${item.title} ${item.id} ${item.category.title} ${item.category.subtitle}'.toLowerCase();
+    return _query.toLowerCase().split(RegExp(r'\s+')).every(haystack.contains);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
     return Scaffold(
-      body: FutureBuilder<Catalog>(
-        future: _catalog,
-        builder: (context, snap) {
-          return CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(child: _Hero(onQuote: () => showEnquirySheet(context))),
-              if (snap.hasError)
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(child: Text('Could not load designs.\n${snap.error}', textAlign: TextAlign.center)),
-                )
-              else if (!snap.hasData)
-                const SliverFillRemaining(hasScrollBody: false, child: Center(child: CircularProgressIndicator()))
-              else ...[
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 8),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('CHOOSE A FLOOR', style: KText.eyebrow()),
-                        const SizedBox(height: 6),
-                        Text('What are we building?', style: text.headlineSmall),
-                      ],
-                    ),
-                  ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-                  sliver: SliverList.separated(
-                    itemCount: snap.data!.categories.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 16),
-                    itemBuilder: (context, i) => _CategoryCard(category: snap.data!.categories[i]),
-                  ),
-                ),
-                SliverToBoxAdapter(child: _HowItWorks()),
-                SliverToBoxAdapter(child: _Footer()),
+      appBar: AppBar(
+        toolbarHeight: 64,
+        titleSpacing: 20,
+        title: const BrandLockup(onDark: false, markSize: 32),
+        actions: [
+          IconButton(
+            tooltip: 'Contact us',
+            icon: const Icon(Icons.support_agent_rounded, size: 26),
+            color: KColors.blue,
+            onPressed: () => showEnquirySheet(context),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: GestureDetector(
+        // Tapping anywhere outside the search box closes the keyboard.
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: FutureBuilder<Catalog>(
+          future: _catalog,
+          builder: (context, snap) {
+            if (snap.hasError) {
+              return Center(child: Text('Could not load designs.\n${snap.error}', textAlign: TextAlign.center));
+            }
+            if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+            final catalog = snap.data!;
+            return Column(
+              children: [
+                _searchField(),
+                _categoryChips(catalog),
+                Expanded(child: _results(catalog)),
               ],
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _Hero extends StatelessWidget {
-  const _Hero({required this.onQuote});
-  final VoidCallback onQuote;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [KColors.navy, KColors.navy, KColors.blueDark],
-          stops: [0, 0.55, 1],
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 12, 28),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const BrandLockup(),
-                  const Spacer(),
-                  IconButton(
-                    tooltip: 'Contact',
-                    color: KColors.white,
-                    icon: const Icon(Icons.support_agent_rounded),
-                    onPressed: () =>
-                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ContactScreen())),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('COURT & FLOOR VISUALISER', style: KText.eyebrow(color: KColors.accentLight)),
-                    const SizedBox(height: 10),
-                    Text.rich(
-                      TextSpan(
-                        style: KText.display(32, color: KColors.white),
-                        children: const [
-                          TextSpan(text: 'See your court\nbefore we '),
-                          TextSpan(
-                            text: 'build it.',
-                            style: TextStyle(color: KColors.accentLight),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Pick a court or playground design, tap to colour every zone, add your logo '
-                      'and send it to us for a quote.',
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: KColors.whiteA(0.72)),
-                    ),
-                    const SizedBox(height: 20),
-                    WhatsAppButton(label: 'Get a quote', onPressed: onQuote),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
   }
-}
 
-class _CategoryCard extends StatelessWidget {
-  const _CategoryCard({required this.category});
-  final FloorCategory category;
-
-  IconData get _icon => switch (category.icon) {
-    'sports_tennis' => Icons.sports_tennis_rounded,
-    'toys' => Icons.toys_rounded,
-    _ => Icons.grid_view_rounded,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    final preview = category.items.take(3).toList();
-    void open() => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CategoryScreen(category: category)));
-
-    return Material(
-      color: KColors.white,
-      borderRadius: BorderRadius.circular(18),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: open,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: KColors.paperDim),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 128,
-                child: Row(
-                  children: [
-                    for (final item in preview)
-                      Expanded(
-                        child: FloorThumbnail(item: item, padding: const EdgeInsets.all(8)),
-                      ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundColor: KColors.tint,
-                      child: Icon(_icon, color: KColors.blue, size: 20),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(category.title, style: text.titleMedium),
-                          const SizedBox(height: 2),
-                          Text('${category.items.length} designs · ${category.subtitle}', style: text.bodySmall),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.arrow_forward_rounded, color: KColors.blue),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HowItWorks extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    const steps = [
-      (Icons.touch_app_outlined, 'Tap to colour', 'Choose a shade, then tap any zone of the floor.'),
-      (Icons.add_photo_alternate_outlined, 'Add your logo', 'Upload your school, club or society logo.'),
-      (Icons.ios_share_rounded, 'Share or print', 'Export as an image or PDF proposal.'),
-    ];
+  Widget _searchField() {
+    const radius = BorderRadius.all(Radius.circular(14));
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 28, 20, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+      child: TextField(
+        controller: _search,
+        onChanged: (v) => setState(() => _query = v.trim()),
+        textInputAction: TextInputAction.search,
+        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: KColors.navy),
+        decoration: InputDecoration(
+          hintText: 'Search courts & floors',
+          hintStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(color: KColors.slateLight),
+          prefixIcon: const Icon(Icons.search_rounded, color: KColors.slateLight),
+          suffixIcon: _query.isEmpty
+              ? null
+              : IconButton(
+                  tooltip: 'Clear',
+                  icon: const Icon(Icons.close_rounded, color: KColors.slateLight),
+                  onPressed: _clearSearch,
+                ),
+          filled: true,
+          fillColor: KColors.white,
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+          border: const OutlineInputBorder(
+            borderRadius: radius,
+            borderSide: BorderSide(color: KColors.paperDim),
+          ),
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: radius,
+            borderSide: BorderSide(color: KColors.paperDim),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: radius,
+            borderSide: BorderSide(color: KColors.blue, width: 1.5),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _categoryChips(Catalog catalog) {
+    Widget chip(String label, String? id) => ChoiceChip(
+      label: Text(label),
+      selected: _filter == id,
+      showCheckmark: false,
+      onSelected: (_) => setState(() => _filter = id),
+    );
+
+    return SizedBox(
+      height: 44,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
-          Text('HOW IT WORKS', style: KText.eyebrow()),
-          const SizedBox(height: 12),
-          for (final s in steps)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 14),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(s.$1, color: KColors.blue),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(s.$2, style: text.titleSmall),
-                        const SizedBox(height: 2),
-                        Text(s.$3, style: text.bodyMedium),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          chip('All', null),
+          for (final c in catalog.categories) ...[const SizedBox(width: 8), chip(c.title, c.id)],
         ],
       ),
     );
   }
-}
 
-class _Footer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 16),
-      color: KColors.navy,
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const BrandLockup(markSize: 28),
-            const SizedBox(height: 12),
-            Text(
-              AppConfig.tagline,
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: KColors.whiteA(0.7)),
+  Widget _results(Catalog catalog) {
+    final text = Theme.of(context).textTheme;
+    const grid = SliverGridDelegateWithMaxCrossAxisExtent(
+      maxCrossAxisExtent: 220,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      childAspectRatio: 0.84,
+    );
+    final slivers = <Widget>[];
+
+    if (_query.isEmpty && _filter == null) {
+      // "All" tab: a short preview of each category with "See all".
+      for (final c in catalog.categories) {
+        slivers
+          ..add(
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(4, 18, 0, 10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(c.title, style: text.titleMedium),
+                          Text('${c.items.length} designs', style: text.bodySmall),
+                        ],
+                      ),
+                    ),
+                    if (c.items.length > _previewCount)
+                      TextButton(onPressed: () => setState(() => _filter = c.id), child: const Text('See all')),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            WhatsAppButton(label: 'Message us on WhatsApp', onPressed: () => showEnquirySheet(context)),
-          ],
+          )
+          ..add(
+            SliverGrid.builder(
+              gridDelegate: grid,
+              itemCount: c.items.length < _previewCount ? c.items.length : _previewCount,
+              itemBuilder: (_, i) => FloorCard(item: c.items[i]),
+            ),
+          );
+      }
+    } else {
+      // A single category and/or a search.
+      final source = _filter == null
+          ? catalog.categories.expand((c) => c.items)
+          : catalog.categories.firstWhere((c) => c.id == _filter).items;
+      final items = source.where(_matches).toList();
+
+      slivers.add(
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(4, 14, 4, 10),
+            child: Text(
+              _query.isEmpty ? '${items.length} designs' : '${items.length} result${items.length == 1 ? '' : 's'}',
+              style: text.labelMedium,
+            ),
+          ),
         ),
+      );
+      if (items.isEmpty) {
+        slivers.add(SliverFillRemaining(hasScrollBody: false, child: _emptyState()));
+      } else {
+        slivers.add(
+          SliverGrid.builder(
+            gridDelegate: grid,
+            itemCount: items.length,
+            itemBuilder: (_, i) => FloorCard(item: items[i]),
+          ),
+        );
+      }
+    }
+
+    return CustomScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      slivers: [
+        for (final s in slivers) SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 16), sliver: s),
+        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+      ],
+    );
+  }
+
+  Widget _emptyState() {
+    final text = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 80),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.search_off_rounded, size: 48, color: KColors.slateLight),
+          const SizedBox(height: 12),
+          Text('No designs match "$_query"', style: text.titleSmall, textAlign: TextAlign.center),
+          const SizedBox(height: 4),
+          Text('Try "badminton", "track" or "playground".', style: text.bodySmall, textAlign: TextAlign.center),
+          const SizedBox(height: 12),
+          TextButton(onPressed: _clearSearch, child: const Text('Clear search')),
+        ],
       ),
     );
   }

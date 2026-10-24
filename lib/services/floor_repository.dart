@@ -1,4 +1,3 @@
-
 import 'package:flutter/services.dart';
 
 import '../models/catalog.dart';

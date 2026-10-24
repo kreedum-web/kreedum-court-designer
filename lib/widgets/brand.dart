@@ -44,23 +44,3 @@ class BrandLockup extends StatelessWidget {
     );
   }
 }
-
-/// WhatsApp-green call-to-action button (style guide accent colours).
-class WhatsAppButton extends StatelessWidget {
-  const WhatsAppButton({super.key, required this.label, required this.onPressed, this.expanded = false});
-
-  final String label;
-  final VoidCallback? onPressed;
-  final bool expanded;
-
-  @override
-  Widget build(BuildContext context) {
-    final btn = FilledButton.icon(
-      onPressed: onPressed,
-      style: FilledButton.styleFrom(backgroundColor: KColors.whatsapp, foregroundColor: KColors.whatsappText),
-      icon: const Icon(Icons.chat_rounded, size: 20),
-      label: Text(label),
-    );
-    return expanded ? SizedBox(width: double.infinity, child: btn) : btn;
-  }
-}

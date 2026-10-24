@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Brand tokens — mirrors STYLE_GUIDE.md (`COLORS` in theme.js).
 /// Add new colours here rather than hard-coding hex values in widgets.
@@ -78,16 +79,43 @@ ThemeData buildTheme() {
       labelMedium: b(12, FontWeight.w500, KColors.slate),
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: KColors.navy,
-      foregroundColor: KColors.white,
+      backgroundColor: KColors.paper,
+      foregroundColor: KColors.navy,
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
+      scrolledUnderElevation: 0,
       centerTitle: false,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+      ),
       titleTextStyle: TextStyle(
         fontFamily: KFonts.display,
         fontWeight: FontWeight.w600,
         fontSize: 18,
+        color: KColors.navy,
+      ),
+    ),
+    chipTheme: ChipThemeData(
+      backgroundColor: KColors.white,
+      selectedColor: KColors.navy,
+      side: const BorderSide(color: KColors.paperDim),
+      labelStyle: const TextStyle(
+        fontFamily: KFonts.body,
+        fontWeight: FontWeight.w500,
+        fontSize: 13,
+        color: KColors.navy,
+      ),
+      secondaryLabelStyle: const TextStyle(
+        fontFamily: KFonts.body,
+        fontWeight: FontWeight.w600,
+        fontSize: 13,
         color: KColors.white,
       ),
+      checkmarkColor: KColors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(

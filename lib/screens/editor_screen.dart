@@ -371,11 +371,17 @@ class _EditorScreenState extends State<EditorScreen> {
             tooltip: 'Undo',
             onPressed: _undo.isEmpty ? null : _undoLast,
             icon: const Icon(Icons.undo_rounded),
-            color: KColors.white,
-            disabledColor: KColors.whiteA(0.3),
+            color: KColors.navy,
+            disabledColor: KColors.slateLight.withValues(alpha: 0.5),
+          ),
+          IconButton(
+            tooltip: 'Get a quote',
+            onPressed: doc == null || _busy ? null : () => showEnquirySheet(context, snapshot: _snapshot),
+            icon: const Icon(Icons.support_agent_rounded, size: 26),
+            color: KColors.blue,
           ),
           PopupMenuButton<String>(
-            iconColor: KColors.white,
+            iconColor: KColors.navy,
             enabled: doc != null,
             onSelected: (v) {
               if (v == 'reset') _reset();
@@ -392,7 +398,7 @@ class _EditorScreenState extends State<EditorScreen> {
         bottom: _busy
             ? const PreferredSize(
                 preferredSize: Size.fromHeight(2),
-                child: LinearProgressIndicator(minHeight: 2, color: KColors.accentLight),
+                child: LinearProgressIndicator(minHeight: 2, color: KColors.blue),
               )
             : null,
       ),
@@ -624,7 +630,6 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 
   Widget _actionBar() {
-    final doc = _doc!;
     return Container(
       decoration: const BoxDecoration(
         color: KColors.white,
@@ -633,27 +638,20 @@ class _EditorScreenState extends State<EditorScreen> {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 6, 12, 8),
+          padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
           child: Row(
             children: [
               _BarButton(icon: Icons.add_photo_alternate_outlined, label: 'Logo', onTap: _logoSheet),
-              _BarButton(icon: Icons.ios_share_rounded, label: 'Export', onTap: _exportSheet),
+              _BarButton(
+                icon: Icons.share_outlined,
+                label: 'Share',
+                onTap: () => _guard(() async => ExportService.shareImage(await _snapshot())),
+              ),
+              _BarButton(icon: Icons.picture_as_pdf_outlined, label: 'Export', onTap: _exportSheet),
               _BarButton(
                 icon: Icons.print_outlined,
                 label: 'Print',
                 onTap: () => _guard(() async => ExportService.printPdf(await _snapshot())),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: KColors.whatsapp,
-                    foregroundColor: KColors.whatsappText,
-                  ),
-                  onPressed: _busy ? null : () => showEnquirySheet(context, snapshot: _snapshot),
-                  icon: const Icon(Icons.chat_rounded, size: 20),
-                  label: Text(doc.zones.isEmpty ? 'Enquire' : 'Get quote'),
-                ),
               ),
             ],
           ),
@@ -747,18 +745,20 @@ class _BarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(10),
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: KColors.navy, size: 22),
-            const SizedBox(height: 2),
-            Text(label, style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 11)),
-          ],
+    return Expanded(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: KColors.navy, size: 22),
+              const SizedBox(height: 2),
+              Text(label, style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 11)),
+            ],
+          ),
         ),
       ),
     );

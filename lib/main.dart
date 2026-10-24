@@ -8,7 +8,12 @@ import 'screens/home_screen.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.light),
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: KColors.paper,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
   );
   runApp(const KreedumApp());
 }
