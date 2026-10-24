@@ -1,0 +1,85 @@
+name: kreedum_construction
+description: Kreedum Construction – sports court & EPDM playground floor colour visualiser.
+publish_to: 'none'
+
+# Bump BOTH numbers for every Play Store upload: <versionName>+<versionCode>
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+  flutter: ">=3.27.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_svg: ^2.0.17
+  xml: ^6.5.0
+  image_picker: ^1.1.2
+  share_plus: ^11.0.0
+  path_provider: ^2.1.5
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  url_launcher: ^6.3.1
+  flutter_colorpicker: ^1.1.0
+
+dependency_overrides:
+    image: ">=4.10.0 <4.11.0"
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/brand/
+    - assets/floors/catalog.json
+    # Every SVG dropped into these folders shows up in the app automatically.
+    # Adding a new category? Add its folder here and a category in catalog.json.
+    - assets/floors/courts/
+    - assets/floors/epdm/
+
+  fonts:
+    - family: SpaceGrotesk
+      fonts:
+        - asset: assets/fonts/SpaceGrotesk_500Medium.ttf
+          weight: 500
+        - asset: assets/fonts/SpaceGrotesk_600SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/SpaceGrotesk_700Bold.ttf
+          weight: 700
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter_400Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter_500Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter_600SemiBold.ttf
+          weight: 600
+    - family: IBMPlexMono
+      fonts:
+        - asset: assets/fonts/IBMPlexMono_500Medium.ttf
+          weight: 500
+
+# dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: assets/brand/app_icon.png
+  adaptive_icon_background: "#2C62E0"
+  adaptive_icon_foreground: assets/brand/app_icon_foreground.png
+  min_sdk_android: 21
+
+# dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#0E1A3D"
+  image: assets/brand/splash_logo.png
+  android_12:
+    color: "#0E1A3D"
+    image: assets/brand/splash_icon_android12.png
+  ios: false
+  web: false

@@ -1,0 +1,6 @@
+# Copy to android/key.properties (never commit or share it) and fill in.
+# storeFile: full path to the .jks you created with keytool (use forward slashes).
+storePassword=CHANGE_ME
+keyPassword=CHANGE_ME
+keyAlias=upload
+storeFile=C:/Users/YOU/keys/kreedum-upload.jks

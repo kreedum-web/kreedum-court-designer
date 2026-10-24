@@ -1,0 +1,270 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "courts",
+      "title": "Sports Courts",
+      "subtitle": "Synthetic & acrylic court systems",
+      "icon": "sports_tennis",
+      "items": [
+        {
+          "id": "badminton",
+          "title": "Badminton Court",
+          "asset": "assets/floors/courts/badminton.svg",
+          "defaults": {
+            "surround": "#1E6B45",
+            "court": "#2C62E0",
+            "boards": "#2C62E0"
+          }
+        },
+        {
+          "id": "basketball_indoor",
+          "title": "Basketball Court \u00b7 Indoor",
+          "asset": "assets/floors/courts/basketball_indoor.svg",
+          "defaults": {
+            "surround": "#1F49B8",
+            "court": "#D9A066",
+            "key": "#2C62E0",
+            "boards": "#2C62E0"
+          }
+        },
+        {
+          "id": "basketball_outdoor",
+          "title": "Basketball Court \u00b7 Outdoor",
+          "asset": "assets/floors/courts/basketball_outdoor.svg",
+          "defaults": {
+            "surround": "#1E6B45",
+            "court": "#2C62E0",
+            "key": "#B5452F",
+            "boards": "#2C62E0"
+          }
+        },
+        {
+          "id": "tennis",
+          "title": "Tennis Court",
+          "asset": "assets/floors/courts/tennis.svg",
+          "defaults": {
+            "surround": "#1E6B45",
+            "court": "#2C62E0",
+            "boards": "#2C62E0"
+          }
+        },
+        {
+          "id": "pickleball",
+          "title": "Pickleball Court",
+          "asset": "assets/floors/courts/pickleball.svg",
+          "defaults": {
+            "surround": "#1E6B45",
+            "court": "#2C62E0",
+            "kitchen": "#6FA34A",
+            "boards": "#2C62E0"
+          }
+        },
+        {
+          "id": "pickleball_vertical",
+          "title": "Pickleball Court \u00b7 Top View",
+          "asset": "assets/floors/courts/pickleball_vertical.svg",
+          "defaults": {
+            "surround": "#1E6B45",
+            "court": "#2C62E0",
+            "kitchen": "#6FA34A"
+          }
+        },
+        {
+          "id": "pickleball_vertical_alt",
+          "title": "Pickleball Court \u00b7 Top View (Alt)",
+          "asset": "assets/floors/courts/pickleball_vertical_alt.svg",
+          "defaults": {
+            "surround": "#8A93A6",
+            "court": "#B5452F",
+            "kitchen": "#2C62E0"
+          }
+        },
+        {
+          "id": "volleyball",
+          "title": "Volleyball Court",
+          "asset": "assets/floors/courts/volleyball.svg",
+          "defaults": {
+            "surround": "#2C62E0",
+            "court": "#E07B39",
+            "boards": "#2C62E0"
+          }
+        },
+        {
+          "id": "running_track",
+          "title": "Running Track",
+          "asset": "assets/floors/courts/running_track.svg",
+          "defaults": {
+            "track": "#B5452F",
+            "field": "#3E8E4A",
+            "boards": "#2C62E0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "epdm",
+      "title": "EPDM Playground Floors",
+      "subtitle": "Rubber safety flooring designs",
+      "icon": "toys",
+      "baseColor": "#EEF1F8",
+      "items": [
+        {
+          "id": "epdm_01",
+          "title": "Playground Design 01",
+          "asset": "assets/floors/epdm/epdm_01.svg"
+        },
+        {
+          "id": "epdm_02",
+          "title": "Playground Design 02",
+          "asset": "assets/floors/epdm/epdm_02.svg"
+        },
+        {
+          "id": "epdm_02_alt",
+          "title": "Playground Design 02 \u00b7 Alt",
+          "asset": "assets/floors/epdm/epdm_02_alt.svg"
+        },
+        {
+          "id": "epdm_03",
+          "title": "Playground Design 03",
+          "asset": "assets/floors/epdm/epdm_03.svg"
+        },
+        {
+          "id": "epdm_04",
+          "title": "Playground Design 04",
+          "asset": "assets/floors/epdm/epdm_04.svg"
+        },
+        {
+          "id": "epdm_05",
+          "title": "Playground Design 05",
+          "asset": "assets/floors/epdm/epdm_05.svg"
+        },
+        {
+          "id": "epdm_06",
+          "title": "Playground Design 06",
+          "asset": "assets/floors/epdm/epdm_06.svg"
+        },
+        {
+          "id": "epdm_07",
+          "title": "Playground Design 07",
+          "asset": "assets/floors/epdm/epdm_07.svg"
+        },
+        {
+          "id": "epdm_08",
+          "title": "Playground Design 08",
+          "asset": "assets/floors/epdm/epdm_08.svg"
+        },
+        {
+          "id": "epdm_09",
+          "title": "Playground Design 09",
+          "asset": "assets/floors/epdm/epdm_09.svg"
+        },
+        {
+          "id": "epdm_10",
+          "title": "Playground Design 10",
+          "asset": "assets/floors/epdm/epdm_10.svg"
+        },
+        {
+          "id": "epdm_11",
+          "title": "Playground Design 11",
+          "asset": "assets/floors/epdm/epdm_11.svg"
+        },
+        {
+          "id": "epdm_11_alt",
+          "title": "Playground Design 11 \u00b7 Alt",
+          "asset": "assets/floors/epdm/epdm_11_alt.svg"
+        },
+        {
+          "id": "epdm_12",
+          "title": "Playground Design 12",
+          "asset": "assets/floors/epdm/epdm_12.svg"
+        },
+        {
+          "id": "epdm_13",
+          "title": "Playground Design 13",
+          "asset": "assets/floors/epdm/epdm_13.svg"
+        },
+        {
+          "id": "epdm_14",
+          "title": "Playground Design 14",
+          "asset": "assets/floors/epdm/epdm_14.svg"
+        },
+        {
+          "id": "epdm_14_alt",
+          "title": "Playground Design 14 \u00b7 Alt",
+          "asset": "assets/floors/epdm/epdm_14_alt.svg"
+        },
+        {
+          "id": "epdm_15",
+          "title": "Playground Design 15",
+          "asset": "assets/floors/epdm/epdm_15.svg"
+        },
+        {
+          "id": "epdm_16",
+          "title": "Playground Design 16",
+          "asset": "assets/floors/epdm/epdm_16.svg"
+        },
+        {
+          "id": "epdm_17",
+          "title": "Playground Design 17",
+          "asset": "assets/floors/epdm/epdm_17.svg"
+        },
+        {
+          "id": "epdm_17_alt",
+          "title": "Playground Design 17 \u00b7 Alt",
+          "asset": "assets/floors/epdm/epdm_17_alt.svg"
+        },
+        {
+          "id": "epdm_18",
+          "title": "Playground Design 18",
+          "asset": "assets/floors/epdm/epdm_18.svg"
+        },
+        {
+          "id": "epdm_18_alt",
+          "title": "Playground Design 18 \u00b7 Alt",
+          "asset": "assets/floors/epdm/epdm_18_alt.svg"
+        },
+        {
+          "id": "epdm_19",
+          "title": "Playground Design 19",
+          "asset": "assets/floors/epdm/epdm_19.svg"
+        },
+        {
+          "id": "epdm_20",
+          "title": "Playground Design 20",
+          "asset": "assets/floors/epdm/epdm_20.svg"
+        },
+        {
+          "id": "epdm_21",
+          "title": "Playground Design 21",
+          "asset": "assets/floors/epdm/epdm_21.svg"
+        },
+        {
+          "id": "epdm_22",
+          "title": "Playground Design 22",
+          "asset": "assets/floors/epdm/epdm_22.svg"
+        },
+        {
+          "id": "epdm_22_alt",
+          "title": "Playground Design 22 \u00b7 Alt",
+          "asset": "assets/floors/epdm/epdm_22_alt.svg"
+        },
+        {
+          "id": "epdm_23",
+          "title": "Playground Design 23",
+          "asset": "assets/floors/epdm/epdm_23.svg"
+        },
+        {
+          "id": "epdm_23_alt",
+          "title": "Playground Design 23 \u00b7 Alt",
+          "asset": "assets/floors/epdm/epdm_23_alt.svg"
+        },
+        {
+          "id": "epdm_24",
+          "title": "Playground Design 24",
+          "asset": "assets/floors/epdm/epdm_24.svg"
+        }
+      ]
+    }
+  ]
+}
