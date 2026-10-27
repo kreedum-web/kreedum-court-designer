@@ -18,17 +18,6 @@
           }
         },
         {
-          "id": "basketball_indoor",
-          "title": "Basketball Court \u00b7 Indoor",
-          "asset": "assets/floors/courts/basketball_indoor.svg",
-          "defaults": {
-            "surround": "#1F49B8",
-            "court": "#D9A066",
-            "key": "#2C62E0",
-            "boards": "#2C62E0"
-          }
-        },
-        {
           "id": "basketball_outdoor",
           "title": "Basketball Court \u00b7 Outdoor",
           "asset": "assets/floors/courts/basketball_outdoor.svg",
@@ -58,26 +47,6 @@
             "court": "#2C62E0",
             "kitchen": "#6FA34A",
             "boards": "#2C62E0"
-          }
-        },
-        {
-          "id": "pickleball_vertical",
-          "title": "Pickleball Court \u00b7 Top View",
-          "asset": "assets/floors/courts/pickleball_vertical.svg",
-          "defaults": {
-            "surround": "#1E6B45",
-            "court": "#2C62E0",
-            "kitchen": "#6FA34A"
-          }
-        },
-        {
-          "id": "pickleball_vertical_alt",
-          "title": "Pickleball Court \u00b7 Top View (Alt)",
-          "asset": "assets/floors/courts/pickleball_vertical_alt.svg",
-          "defaults": {
-            "surround": "#8A93A6",
-            "court": "#B5452F",
-            "kitchen": "#2C62E0"
           }
         },
         {

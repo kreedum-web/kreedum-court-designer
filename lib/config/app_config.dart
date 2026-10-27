@@ -17,7 +17,7 @@ class AppConfig {
   static const String phoneNumber = '7570004258';
 
   /// Enquiry e-mail address.
-  static const String email = 'info@kreedumsports.com';
+  static const String email = 'kreedumindia@gmail.com';
 
   static const String website = 'https://kreedum.com';
 

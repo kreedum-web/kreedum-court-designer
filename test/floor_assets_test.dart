@@ -17,7 +17,7 @@ void main() {
           .toList()
         ..sort((a, b) => a.path.compareTo(b.path));
 
-  test('found floor drawings', () => expect(svgs.length, greaterThanOrEqualTo(40)));
+  test('found floor drawings', () => expect(svgs.length, greaterThanOrEqualTo(37)));
 
   for (final f in svgs) {
     test('parses ${f.path}', () {
