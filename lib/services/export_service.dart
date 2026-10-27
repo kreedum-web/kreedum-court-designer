@@ -77,17 +77,25 @@ class ExportService {
     return f;
   }
 
-  static Future<void> shareImage(DesignSnapshot d, {Rect? origin}) async {
-    final f = await _temp('${d.fileStem}.png', d.png);
-    await SharePlus.instance.share(
-      ShareParams(
-        files: [XFile(f.path, mimeType: 'image/png')],
-        subject: '${AppConfig.appName} – ${d.title}',
-        text: d.enquiryText(),
-        sharePositionOrigin: origin,
-      ),
-    );
-  }
+  static Future<void> shareImage(
+  DesignSnapshot d, {
+  Rect? origin,
+}) async {
+  final watermarked = await _addWatermark(d.png);
+  final f = await _temp(
+    '${d.fileStem}.png',
+    watermarked,
+  );
+
+  await SharePlus.instance.share(
+    ShareParams(
+      files: [XFile(f.path, mimeType: 'image/png')],
+      subject: '${AppConfig.appName} – ${d.title}',
+      text: d.enquiryText(),
+      sharePositionOrigin: origin,
+    ),
+  );
+}
 
   static Future<void> sharePdf(DesignSnapshot d, {Rect? origin}) async {
     final f = await _temp('${d.fileStem}.pdf', await buildPdf(d));
@@ -105,6 +113,63 @@ class ExportService {
     await Printing.layoutPdf(onLayout: (_) async => bytes, name: '${d.fileStem}.pdf');
   }
 
+
+  static Future<Uint8List> _addWatermark(Uint8List bytes) async {
+  final codec = await ui.instantiateImageCodec(bytes);
+  final frame = await codec.getNextFrame();
+  final image = frame.image;
+
+  final recorder = ui.PictureRecorder();
+  final canvas = ui.Canvas(recorder);
+  final size = ui.Size(
+    image.width.toDouble(),
+    image.height.toDouble(),
+  );
+
+  canvas.drawImage(image, ui.Offset.zero, ui.Paint());
+
+  final textStyle = ui.TextStyle(
+    color: const ui.Color(0x668FFFFFF),
+    fontSize: size.width * 0.045,
+    fontWeight: ui.FontWeight.bold,
+  );
+
+  final builder = ui.ParagraphBuilder(
+    ui.ParagraphStyle(textAlign: ui.TextAlign.center),
+  )
+    ..pushStyle(textStyle)
+    ..addText('KREEDUM CONSTRUCTION');
+
+  final paragraph = builder.build()
+    ..layout(ui.ParagraphConstraints(width: size.width));
+
+  canvas.save();
+  canvas.translate(size.width / 2, size.height / 2);
+  canvas.rotate(-math.pi / 5);
+  canvas.drawParagraph(
+    paragraph,
+    ui.Offset(-size.width / 2, -paragraph.height / 2),
+  );
+  canvas.restore();
+
+  final picture = recorder.endRecording();
+  final watermarked = await picture.toImage(
+    image.width,
+    image.height,
+  );
+
+  final data = await watermarked.toByteData(
+    format: ui.ImageByteFormat.png,
+  );
+
+  image.dispose();
+  watermarked.dispose();
+  picture.dispose();
+  codec.dispose();
+
+  return data!.buffer.asUint8List();
+}
+
   // ------------------------------------------------------------------ PDF
 
   static Future<pw.Font> _font(String asset) async => pw.Font.ttf(await rootBundle.load(asset));
@@ -115,7 +180,8 @@ class ExportService {
     final display = await _font('assets/fonts/SpaceGrotesk_700Bold.ttf');
     final mono = await _font('assets/fonts/IBMPlexMono_500Medium.ttf');
     final logo = pw.MemoryImage((await rootBundle.load('assets/brand/logo_mark_white.png')).buffer.asUint8List());
-    final design = pw.MemoryImage(d.png);
+    final watermarkedPng = await _addWatermark(d.png);
+    final design = pw.MemoryImage(watermarkedPng);
 
     const navy = PdfColor.fromInt(0xFF0E1A3D);
     const blue = PdfColor.fromInt(0xFF2C62E0);

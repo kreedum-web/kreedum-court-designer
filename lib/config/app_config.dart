@@ -11,10 +11,8 @@ class AppConfig {
   static const String tagline = 'Sports courts & playground flooring';
 
   /// WhatsApp number in international format, digits only (no +, spaces or dashes).
-  static const String whatsappNumber = '7570004258';
-
-  /// Phone number for the "Call" button.
-  static const String phoneNumber = '7570004258';
+static const String whatsappNumber = '917570002458';
+static const String phoneNumber = '917570002458';
 
   /// Enquiry e-mail address.
   static const String email = 'kreedumindia@gmail.com';
