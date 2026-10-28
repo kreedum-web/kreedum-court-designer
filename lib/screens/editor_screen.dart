@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -26,6 +26,7 @@ class EditorScreen extends StatefulWidget {
 class _EditorScreenState extends State<EditorScreen> {
   final _boundaryKey = GlobalKey();
   final _transform = TransformationController();
+  static const String _tutorialSeenKey = 'court_designer_tutorial_seen_v1';
 
   FloorDocument? _doc;
   HitMap? _hit;
@@ -64,6 +65,17 @@ class _EditorScreenState extends State<EditorScreen> {
     super.dispose();
   }
 
+  Future<void> _maybeShowFirstRunTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (prefs.getBool(_tutorialSeenKey) ?? false) return;
+    if (!mounted) return;
+
+    await _showHelp(firstRun: true);
+
+    await prefs.setBool(_tutorialSeenKey, true);
+  }
+
   Future<void> _load() async {
     try {
       final doc = await FloorRepository.open(widget.item);
@@ -75,6 +87,9 @@ class _EditorScreenState extends State<EditorScreen> {
         _hit = hit;
         _colors = Map.of(_initial);
         _svg = doc.render(_colors);
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _maybeShowFirstRunTutorial();
       });
     } catch (e) {
       if (mounted) setState(() => _error = e);
@@ -109,9 +124,9 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 
   void _placeLogo(Offset local, Size size) => setState(() {
-    _logoPos = Offset((local.dx / size.width).clamp(0.0, 1.0), (local.dy / size.height).clamp(0.0, 1.0));
-    _snapshotCache = null;
-  });
+        _logoPos = Offset((local.dx / size.width).clamp(0.0, 1.0), (local.dy / size.height).clamp(0.0, 1.0));
+        _snapshotCache = null;
+      });
 
   void _undoLast() {
     if (_undo.isEmpty) return;
@@ -407,14 +422,14 @@ class _EditorScreenState extends State<EditorScreen> {
               child: Padding(padding: const EdgeInsets.all(24), child: Text('Could not open design.\n$_error')),
             )
           : doc == null
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(child: _canvas()),
-                if (_moveLogo) _logoControls() else ...[if (doc.hasNamedZones) _zoneStrip(doc), _palette()],
-                _actionBar(),
-              ],
-            ),
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                  children: [
+                    Expanded(child: _canvas()),
+                    if (_moveLogo) _logoControls() else ...[if (doc.hasNamedZones) _zoneStrip(doc), _palette()],
+                    _actionBar(),
+                  ],
+                ),
     );
   }
 
@@ -660,27 +675,104 @@ class _EditorScreenState extends State<EditorScreen> {
     );
   }
 
-  void _showHelp() {
-    showModalBottomSheet<void>(
+  Future<void> _showHelp({bool firstRun = false}) async {
+    await showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       builder: (ctx) => SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('How to use', style: Theme.of(ctx).textTheme.titleLarge),
+              Text(
+                firstRun ? 'Welcome to Kreedum Court Designer' : 'How to use',
+                style: Theme.of(ctx).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                firstRun
+                    ? 'Design your court by choosing colours, '
+                        'painting individual areas and adding logos.'
+                    : 'Follow these steps to create your design.',
+              ),
+              const SizedBox(height: 20),
+              const _TutorialStep(
+                icon: Icons.palette_outlined,
+                title: '1. Choose a colour',
+                detail: 'Select a preset shade below or use the custom colour picker.',
+              ),
+              const _TutorialStep(
+                icon: Icons.touch_app_outlined,
+                title: '2. Colour the court',
+                detail: 'Tap an area to paint it. Pinch to zoom for smaller areas.',
+              ),
+              const _TutorialStep(
+                icon: Icons.image_outlined,
+                title: '3. Add a logo',
+                detail: 'Use Logo to upload a client logo or place the Kreedum logo.',
+              ),
+              const _TutorialStep(
+                icon: Icons.ios_share_outlined,
+                title: '4. Export or get a quote',
+                detail: 'Share an image, export a PDF, print your design or request a quote.',
+              ),
               const SizedBox(height: 12),
-              const Text(
-                '1. Choose a colour from the strip (or the dropper for any shade).\n'
-                '2. Tap an area of the floor to paint it. Pinch to zoom for small areas.\n'
-                '3. Use “Logo” to put your client\'s logo on the boards or floor.\n'
-                '4. Export as an image or PDF, print it, or tap “Get quote” to send it to us.',
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(
+                    firstRun ? 'Start designing' : 'Got it',
+                  ),
+                ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _TutorialStep extends StatelessWidget {
+  const _TutorialStep({
+    required this.icon,
+    required this.title,
+    required this.detail,
+  });
+
+  final IconData icon;
+  final String title;
+  final String detail;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: KColors.blue, size: 26),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  detail,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
