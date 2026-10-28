@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-
+import 'dart:ui' show Color;
 import '../models/catalog.dart';
 import 'floor_document.dart';
 
@@ -13,10 +13,11 @@ class FloorRepository {
 
   static Future<FloorDocument> open(FloorItem item) async => FloorDocument.parse(await raw(item.asset));
 
-  /// Catalog defaults → category base colour → colour in the SVG.
-  static Map<int, Color> initialColors(FloorDocument doc, FloorItem item) => {
-    for (final z in doc.zones) z.index: item.defaults[z.key] ?? item.category.baseColor ?? z.original,
-  };
+ /// Start every paintable area neutral. User-picked colours are applied by the
+/// editor; SVG strokes/markings remain visible.
+static Map<int, Color> initialColors(FloorDocument doc, FloorItem item) => {
+  for (final z in doc.zones) z.index: const Color(0xFFEEF1F8),
+};
 
   /// Rendered SVG for list thumbnails (cached for the app session).
   static Future<String> thumbnail(FloorItem item) => _thumbs.putIfAbsent(item.asset, () async {

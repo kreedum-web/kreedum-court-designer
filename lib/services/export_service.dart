@@ -138,7 +138,11 @@ class ExportService {
     ui.ParagraphStyle(textAlign: ui.TextAlign.center),
   )
     ..pushStyle(textStyle)
-    ..addText('KREEDUM CONSTRUCTION');
+    ..addText(
+  AppConfig.website
+      .replaceFirst(RegExp(r'^https?://'), '')
+      .replaceAll(RegExp(r'/$'), ''),
+);
 
   final paragraph = builder.build()
     ..layout(ui.ParagraphConstraints(width: size.width));
