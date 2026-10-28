@@ -19,7 +19,7 @@
         },
         {
           "id": "basketball_outdoor",
-          "title": "Basketball Court \u00b7 Outdoor",
+          "title": "Basketball Court",
           "asset": "assets/floors/courts/basketball_outdoor.svg",
           "defaults": {
             "surround": "#1E6B45",
@@ -89,11 +89,6 @@
           "asset": "assets/floors/epdm/epdm_02.svg"
         },
         {
-          "id": "epdm_02_alt",
-          "title": "Playground Design 02 \u00b7 Alt",
-          "asset": "assets/floors/epdm/epdm_02_alt.svg"
-        },
-        {
           "id": "epdm_03",
           "title": "Playground Design 03",
           "asset": "assets/floors/epdm/epdm_03.svg"
@@ -139,11 +134,6 @@
           "asset": "assets/floors/epdm/epdm_11.svg"
         },
         {
-          "id": "epdm_11_alt",
-          "title": "Playground Design 11 \u00b7 Alt",
-          "asset": "assets/floors/epdm/epdm_11_alt.svg"
-        },
-        {
           "id": "epdm_12",
           "title": "Playground Design 12",
           "asset": "assets/floors/epdm/epdm_12.svg"
@@ -159,11 +149,6 @@
           "asset": "assets/floors/epdm/epdm_14.svg"
         },
         {
-          "id": "epdm_14_alt",
-          "title": "Playground Design 14 \u00b7 Alt",
-          "asset": "assets/floors/epdm/epdm_14_alt.svg"
-        },
-        {
           "id": "epdm_15",
           "title": "Playground Design 15",
           "asset": "assets/floors/epdm/epdm_15.svg"
@@ -174,23 +159,13 @@
           "asset": "assets/floors/epdm/epdm_16.svg"
         },
         {
-          "id": "epdm_17",
-          "title": "Playground Design 17",
-          "asset": "assets/floors/epdm/epdm_17.svg"
-        },
-        {
           "id": "epdm_17_alt",
-          "title": "Playground Design 17 \u00b7 Alt",
+          "title": "Playground Design 17",
           "asset": "assets/floors/epdm/epdm_17_alt.svg"
         },
         {
-          "id": "epdm_18",
-          "title": "Playground Design 18",
-          "asset": "assets/floors/epdm/epdm_18.svg"
-        },
-        {
           "id": "epdm_18_alt",
-          "title": "Playground Design 18 \u00b7 Alt",
+          "title": "Playground Design 18",
           "asset": "assets/floors/epdm/epdm_18_alt.svg"
         },
         {
@@ -214,18 +189,8 @@
           "asset": "assets/floors/epdm/epdm_22.svg"
         },
         {
-          "id": "epdm_22_alt",
-          "title": "Playground Design 22 \u00b7 Alt",
-          "asset": "assets/floors/epdm/epdm_22_alt.svg"
-        },
-        {
-          "id": "epdm_23",
-          "title": "Playground Design 23",
-          "asset": "assets/floors/epdm/epdm_23.svg"
-        },
-        {
           "id": "epdm_23_alt",
-          "title": "Playground Design 23 \u00b7 Alt",
+          "title": "Playground Design 23",
           "asset": "assets/floors/epdm/epdm_23_alt.svg"
         },
         {

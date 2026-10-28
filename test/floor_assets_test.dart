@@ -17,8 +17,7 @@ void main() {
           .toList()
         ..sort((a, b) => a.path.compareTo(b.path));
 
-  test('found floor drawings', () => expect(svgs.length, greaterThanOrEqualTo(37)));
-
+test('found floor drawings', () => expect(svgs.length, greaterThanOrEqualTo(33)));
   for (final f in svgs) {
     test('parses ${f.path}', () {
       final doc = FloorDocument.parse(f.readAsStringSync());
